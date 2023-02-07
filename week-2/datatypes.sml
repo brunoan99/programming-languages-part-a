@@ -120,3 +120,84 @@ fun number_of_adds e =
     |  Negate e2        => number_of_adds e2
     |  Add (e1, e2)      => 1 + number_of_adds e1 + number_of_adds e2
     |  Multiply(e1, e2)  => number_of_adds e1 + number_of_adds e2
+
+(*
+Polymorphic datatype
+
+Claimed built-in options and lists are not needed/special
+  - Other than special syntax for list constructors
+
+But these datatype bindings are polymmorphic type constructors
+  - int list and string list and int list list are all types, not list
+
+  - Functions might or might not be polymorphic
+    - val sum_list : int list -> int
+    - val append : 'a list * 'a list -> 'a list
+
+Good language design: Can define new polymorphic datatypes.
+
+Syntax: put one or more type variables before datatype name
+  Examples:
+    datatype 'a options = NONE | SOME of 'a
+
+    datatype 'a mylist = Empty | Cons of 'a * 'a mylist
+
+    datatype ('a, 'b) tree = Node of 'a * ('a, 'b) tree * ('a, 'b) tree
+                           | Leaf of 'b
+
+Can use these type variables in constructor definitions
+
+Binding then introduces a type constructor, not a type
+  - Must say int mylist or string mylist or 'a mylist
+  - Not "plain" mylist
+*)
+
+(* type is int list -> int *)
+fun sum_list xs =
+  case xs of
+      [] => 0
+    | x::xs' => x + sum_list xs'
+
+(* type is 'a list * 'a list -> 'a list *)
+fun append (xs, ys) =
+  case xs of
+      [] => ys
+    | x::xs' => x::append(xs', ys)
+
+
+datatype ('a, 'b) tree = Node of 'a * ('a, 'b) tree * ('a, 'b) tree
+                        | Leaf of 'b
+
+(* type is (int,int) tree -> int *)
+fun sum_tree tr =
+  case tr of
+      Leaf i => i
+    | Node (i, lft, rgt) => i + sum_tree lft + sum_tree rgt
+
+(* type is ('a,int) tree -> int *)
+fun sum_leaves tr =
+  case tr of
+      Leaf i => i
+    | Node (_, lft, rgt) => sum_leaves lft + sum_leaves rgt
+
+(* type is ('a,'b) tree -> int *)
+fun count_leaves tr =
+  case tr of
+      Leaf _ => 1
+    | Node (_, lft, rgt) => count_leaves lft + count_leaves rgt
+
+(*
+Nothing else changes
+
+Use constructors and case expressions as usual
+
+- No change to evaluation rules
+
+- Type-checking will make sure types are used consistently
+  - Example: cannot mix element types of list
+
+- Functions will be polymorphic or not based on how data is used
+
+
+
+*)
