@@ -57,8 +57,74 @@ fun unzip3 lst =
       in
         (a::l1, b::l2, c::l3)
       end
-    | _ => raise ListLengthMismatch
 
 (*
 With nested pattern matching the functions works the same but in terms of readability is clearly shorter and easier to understand what each piece of code do.
+*)
+
+(*
+Another example
+The function nondecreasing will check if the function isn't decreasing the numbers
+This example dont use nested pattern matching
+*)
+fun nondecreasing xs = (* int list -> bool *)
+  case xs of
+      [] => true
+    | x::xs' =>
+      case xs' of
+        [] => true
+      | y::ys' => x <= y andalso nondecreasing xs'
+
+(* using nested pattern matching *)
+fun nondecreasing xs = (* int list -> bool *)
+  case xs of
+      [] => true
+    | _::[] => true
+    | head::neck::tail => head <= neck
+                          andalso nondecreasing (neck::tail)
+
+datatype sgn = P | N | Z
+
+fun multsign (x1, x2) = (* int * int -> sgn *)
+  let fun sign x = if x=0 then Z else if x>0 then P else N
+  in
+    case (sign x1, sign x2) of
+        (Z,_) => Z
+      | (_,Z) => Z
+      | (P,P) => P
+      | (N,N) => P
+      | (P,N) => N
+      | (N,P) => N
+    (*
+    or instead of using explicit the last 2 patterns is possible to use the pattern:
+      | _ => N
+    *)
+  end
+
+fun multsign2 (x1, x2) = (* int * int -> sgn *)
+  let fun sign x = if x=0 then Z else if x>0 then P else N
+  in
+    case (sign x1, sign x2) of
+        (Z,_) => Z
+      | (_,Z) => Z
+      | (x,y) => if x = y then P else N
+  end
+
+fun len xs =
+  case xs of
+      [] => 0
+    | _::xs' => 1 + len xs'
+
+(*
+Style
+
+Nested patterns can lead to very elegant, concise code
+  - Avoid nested case expressions if nested patterns are simpler and avoid unnecessary branches or let-expressions
+    Example: unizp3 and nondecreasing
+  - A common idiom is matching against a tuple of datatype to compare them
+    Example: zip3 and multsign
+
+Wildcards are good style: use them instead of variables when you do not need the data
+ - Examples: len and multsign
+
 *)
