@@ -128,3 +128,37 @@ Wildcards are good style: use them instead of variables when you do not need the
  - Examples: len and multsign
 
 *)
+
+(*
+(Most of) the full definition
+
+The semantics for pattern-matching takes a pattern p and a value v and decides (1) does it match and (2) if so, what variable bindings are introduced.
+
+Sice patterns can nest, the definition is elegantly recursive, with a separate rule for each kind of pattern. Some of the rules:
+- If p is a variable x,
+    the match succeeds and x is bound to v
+- If p is _,
+    the match succeeds and no bindings are introduced
+- If p is (p1, ..., pn) and v is (v1, ..., vn),
+    the match succeeds if and only if p1 matches v1, ..., pn matches vn. The bindings are the union of all bindings from the submatches
+- If p is C p1,
+    the match succeeeds if v is C v1 (i.e., the same constructor) and p1 matches v1. The bindings are the bindings from the submatch.
+- ... (there are severral other similar forms of patterns)
+*)
+
+(*
+Examples:
+
+- Pattern a::b::c::d matches all list with >= 3 elemnts
+    Supposing the pattern is being applied to a type 'a list then,
+    the a, b and c will be type 'a and d will be 'a list. d can be a empty list.
+
+- Pattern a::b::c::[] matches all list with 3 elemnts
+    Supposing the pattern is being applied to a type 'a list then,
+    the a, b and c will be type 'a.
+
+- Pattern ((a,b), (c,d))::e matches all non-empty list of pairs of pairs
+    Supposing the pattern is being applied to a type ('a * 'b) * ('c * 'd) list then,
+    a will be type 'a, b will be type 'b, c will be type 'c and d will be type 'd.
+
+*)
