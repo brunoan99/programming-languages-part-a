@@ -209,3 +209,7 @@ ML recognizes these tail calls in the compiler and treats them differently:
 
 Reasonable to assume all functional-language implementations do tail-call optiomization
 *)
+
+(*
+Tail recursion works cause when we do a call to a function all parameters are evaluated before the function execution.
+*)
