@@ -1,16 +1,3 @@
-(*
-More idioms
-
-We know the rule for lexical scope and function closures
-
-A partial but wide-ranging list:
-  - Pass functios with privatee data to iterators
-  - Combine function (e.g., composition)
-  - Currying (multi-arg functions and partial applications)
-  - Callbacks(e.g., in reactive programming)
-  - Implementing an ADT with a record of functions
-*)
-
 (* Combine Function *)
 
 (* ('a -> 'b) * ('c -> 'a) -> 'c -> 'b *)
@@ -55,4 +42,3 @@ fun backup1 (f, g) = fn x => case f x of
 
 (* ('a -> 'b) * ('a -> 'b) -> 'a -> 'b *)
 fun backup2 (f, g) = fn x => f x handle _ => g x
-
