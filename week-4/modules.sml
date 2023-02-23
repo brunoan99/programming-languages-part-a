@@ -50,3 +50,19 @@ So far, this is just namespace management
     - And open can be useful, e.g., for testing code in REPL
 
 *)
+
+(* Can't mix-and-match module bindings
+
+Modules with the same signatures still define differeent types
+
+So things like this do not type-check:
+  - RationalA.toString(RationalB.make_frac(9,6))
+  - RationalC.toString(RationalB.make_frac(9,6))
+
+This is a crucial feeature for type system and module properties:
+  - Different modules have different internal invariants!
+  - In fact, they have different type definitions
+    - RationalA.rational lookes like RationalB.rational but clients and the type-checker do not know that
+    - RationalC.rational is int*int not a datatype
+
+*)
