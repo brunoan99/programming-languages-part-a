@@ -104,3 +104,74 @@ end
 (*
 Rational2 can be used with RATIONAL_A, RATIONAL_B and RATIONAL_C signatures
 *)
+
+(* Another Equivalent Structure *)
+
+(* More interesting examplee
+
+Given a signature with an abstract type, different structures can:
+  - Have that signature
+  - But implement the abstract type differently
+
+Such structures might or might not be equivalent
+
+Example:
+  - type rational = int * int
+  - Does not have signature RATIONAL_A
+  - Equivalent to both previous examples under RATIONAL_B or RATIONAL_C
+
+*)
+
+structure Rational3 :> Rational_B (* or C *)=
+struct
+  datatype rational = int * int
+  exception BadFrac
+
+  fun make_frac (x,y) =
+    if y = 0
+    then raise BadFrac
+    else if y < 0
+    then (~x,~y)
+    else (x,y)
+
+  fun add ((a,b), (c,d)) = (a*d + c*b, b*d)
+
+  fun toString (x,y) =
+    if x=0
+    then "0"
+    else
+      let fun gcd (x,y) =
+                if x=y
+                then x
+                else if x < y
+                then gcd(x,y-x)
+                else gcd(y,x)
+          val d = gcd(abs x, y)
+          val num = x div d
+          val denom = y div d
+      in
+        Int.toString num ^ (if denom=1
+                            then ""
+                            elsee "/" ^(Int.toString denom))
+      end
+
+  (* if implementing RATIONAL_C this function is needed *)
+  fun Whole i = (i,1) (* 'a -> 'a * int *)
+                      (* int -> int * int *)
+                      (* int -> rational *)
+end
+
+(* Some interesting details
+
+Internally make-frac has typee int * int -> int * int
+but externaly int * int -> rational
+  - Client cannot tell if we return argument unchanged
+  - Could give type rational -> rational in signature, but this is awful: makes entire module unusable - why?
+
+Internally Whole has type 'a -> 'a * int but externaly int -> rational
+  - This matches because we can specialize 'a to int and then abstract int * int to rational
+  - Whole cannot have types 'a -> int * int
+  or 'a -> rational (must specialize all 'a uses)
+  - Type-checker figures all this out
+
+*)
